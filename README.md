@@ -73,4 +73,4 @@ make drift CURRENT=data/some_new_batch.csv   # HTML report in reports/
 ## Deploy to Hugging Face Spaces
 1. Create a Space: SDK **Docker**, name `readmission-api`.
 2. In this GitHub repo, add the secret `HF_TOKEN` (a write token from hf.co/settings/tokens) and the variable `HF_SPACE` = `safiyakhan46/readmission-api`.
-3. Commit `models/model.joblib`, `models/metadata.json` and `data/reference.csv`, then push to `main`. CI tests, builds and deploys.
+3. Commit `models/model.joblib`, `models/metadata.json` and `models/reference.csv`, then push to `main`. CI tests, builds and deploys.

@@ -9,16 +9,19 @@ import pandas as pd
 from evidently import Report
 from evidently.presets import DataDriftPreset
 
+from . import predict
 from .features import prepare
 from .schema import FEATURES
 
 ROOT = Path(__file__).resolve().parents[2]
-REFERENCE = ROOT / "data" / "reference.csv"
+REFERENCE: Path | None = None  # override in tests; default is MODEL_DIR/reference.csv
 
 
 def drift_summary(current_raw: pd.DataFrame, reference: pd.DataFrame | None = None):
     """Returns (summary dict, evidently snapshot)."""
-    ref = reference if reference is not None else pd.read_csv(REFERENCE)
+    if reference is None:
+        reference = pd.read_csv(REFERENCE or predict.MODEL_DIR / "reference.csv")
+    ref = reference
     cur = prepare(current_raw)[FEATURES]
     snapshot = Report([DataDriftPreset()]).run(reference_data=ref[FEATURES], current_data=cur)
     result = snapshot.dict()

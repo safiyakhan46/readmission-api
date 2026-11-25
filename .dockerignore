@@ -5,8 +5,7 @@ mlflow.db
 mlartifacts
 tests
 reports
-data/*
-!data/reference.csv
+data
 **/__pycache__
 .pytest_cache
 .venv

@@ -3,8 +3,8 @@
     python -m readmission.train --data data/diabetic_data.csv
 
 Splits by patient (patient_nbr) so no patient appears in both train and test.
-Writes models/model.joblib, models/metadata.json and data/reference.csv
-(a sample of training features used as the drift baseline).
+Writes model.joblib, metadata.json and reference.csv (a sample of training
+features used as the drift baseline) into the --out folder, models/ by default.
 """
 import argparse
 import json
@@ -129,10 +129,9 @@ def train(data_path: str, out_dir: Path, seed: int = 42, use_mlflow: bool = True
         "data": os.path.basename(data_path), "n_train": len(X_tr), "n_val": len(X_va), "n_test": len(X_te),
         "params": PARAMS, "test_metrics": metrics, "subgroup_metrics": subgroups,
     }
-    (out_dir / "metadata.json").write_text(json.dumps(meta, indent=2))
-    ref_path = ROOT / "data" / "reference.csv"
-    ref_path.parent.mkdir(exist_ok=True)
-    X_tr.sample(min(5000, len(X_tr)), random_state=seed).to_csv(ref_path, index=False)
+    (out_dir / "metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    # Baseline for drift monitoring lives next to the model it describes.
+    X_tr.sample(min(5000, len(X_tr)), random_state=seed).to_csv(out_dir / "reference.csv", index=False)
 
     if use_mlflow:
         import mlflow

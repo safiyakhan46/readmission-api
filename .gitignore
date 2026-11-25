@@ -5,6 +5,6 @@ mlruns/
 mlartifacts/
 mlflow.db
 reports/
-# raw data stays out of git; reference.csv (the drift baseline) is committed
+# raw data stays out of git (the drift baseline is models/reference.csv)
 data/*
-!data/reference.csv
+!data/.gitkeep

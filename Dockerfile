@@ -19,7 +19,6 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 COPY --chown=user src ./src
 COPY --chown=user app ./app
 COPY --chown=user models ./models
-COPY --chown=user data/reference.csv ./data/reference.csv
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860/health')"

@@ -1,7 +1,7 @@
 {
-  "model_version": "202611251150-nogit",
+  "model_version": "202611251204-70f9956",
   "threshold": 0.13999999999999999,
-  "trained_at": "2026-11-25T11:50:13.866909+00:00",
+  "trained_at": "2026-11-25T12:04:00.631487+00:00",
   "data": "diabetic_data.csv",
   "n_train": 63670,
   "n_val": 15871,

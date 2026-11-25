@@ -12,7 +12,7 @@ def replace_block(text: str, tag: str, body: str) -> str:
 
 
 def main():
-    meta = json.loads((ROOT / "models" / "metadata.json").read_text())
+    meta = json.loads((ROOT / "models" / "metadata.json").read_text(encoding="utf-8"))
     m = meta["test_metrics"]
     metrics = "\n".join([
         f"Model version `{meta['model_version']}`, trained on `{meta['data']}` "
@@ -29,9 +29,10 @@ def main():
     for g, s in meta.get("subgroup_metrics", {}).items():
         rows.append(f"| {g} | {s['n']:,} | {s['prevalence']:.3f} | {s['roc_auc']:.3f} | {s['recall']:.3f} |")
     card = ROOT / "MODEL_CARD.md"
-    text = replace_block(card.read_text(), "METRICS", metrics)
+    # Always UTF-8: Windows would otherwise default to cp1252 and garble the dashes.
+    text = replace_block(card.read_text(encoding="utf-8", errors="replace"), "METRICS", metrics)
     text = replace_block(text, "SUBGROUPS", "\n".join(rows))
-    card.write_text(text)
+    card.write_text(text, encoding="utf-8")
     print("MODEL_CARD.md updated")
 
 

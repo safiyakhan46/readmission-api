@@ -15,7 +15,7 @@ MODEL_DIR = Path(os.getenv("MODEL_DIR", Path(__file__).resolve().parents[2] / "m
 @lru_cache(maxsize=1)
 def load():
     model = joblib.load(MODEL_DIR / "model.joblib")
-    meta = json.loads((MODEL_DIR / "metadata.json").read_text())
+    meta = json.loads((MODEL_DIR / "metadata.json").read_text(encoding="utf-8"))
     return model, meta
 
 

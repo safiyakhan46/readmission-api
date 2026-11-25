@@ -24,11 +24,11 @@
 Test-set metrics. The 95% CI for ROC-AUC comes from 500 bootstrap resamples.
 
 <!-- METRICS -->
-Model version `202611251150-nogit`, trained on `diabetic_data.csv` (train 63,670 / val 15,871 / test 19,802 encounters).
+Model version `202611251204-70f9956`, trained on `diabetic_data.csv` (train 63,670 / val 15,871 / test 19,802 encounters).
 
 | Metric | Value |
 |---|---|
-| ROC-AUC (95% CI) | 0.668 (0.657�0.680) |
+| ROC-AUC (95% CI) | 0.668 (0.657–0.680) |
 | PR-AUC | 0.231 (prevalence 0.112) |
 | Brier score | 0.094 |
 | Threshold | 0.14 |
@@ -63,7 +63,7 @@ AUC and recall are reported by gender, race and age band (groups with ≥100 tes
 <!-- /SUBGROUPS -->
 
 ## Monitoring
-- `/drift` and `python -m readmission.drift` compare a new batch against a 5,000-row sample of training features using Evidently's `DataDriftPreset`. Numeric columns use Wasserstein distance; categorical columns use chi-square or Jensen-Shannon.
+- `/drift` and `python -m readmission.drift` compare a new batch against a 5,000-row sample of training features (`models/reference.csv`) using Evidently's `DataDriftPreset`. Numeric columns use Wasserstein distance; categorical columns use chi-square or Jensen-Shannon.
 - **Retraining trigger (suggested):** more than 30% of features drift, or `number_inpatient`, `discharge_disposition_id` or `age` drift. Those are the strongest predictors.
 - Drift says nothing about accuracy. Performance can only be checked once 30-day outcomes for the new batch are known.
 
