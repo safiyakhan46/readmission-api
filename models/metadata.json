@@ -1,0 +1,133 @@
+{
+  "model_version": "202611251150-nogit",
+  "threshold": 0.13999999999999999,
+  "trained_at": "2026-11-25T11:50:13.866909+00:00",
+  "data": "diabetic_data.csv",
+  "n_train": 63670,
+  "n_val": 15871,
+  "n_test": 19802,
+  "params": {
+    "n_estimators": 400,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 5,
+    "eval_metric": "logloss"
+  },
+  "test_metrics": {
+    "roc_auc": 0.6684128302337641,
+    "roc_auc_ci_low": 0.6566511808391171,
+    "roc_auc_ci_high": 0.6803192834995538,
+    "pr_auc": 0.23143351341661947,
+    "brier": 0.09437187016010284,
+    "precision": 0.203005970763846,
+    "recall": 0.44494584837545126,
+    "f1": 0.2788067298176163,
+    "prevalence": 0.11190788809211191
+  },
+  "subgroup_metrics": {
+    "gender=Female": {
+      "n": 10645,
+      "prevalence": 0.1116,
+      "roc_auc": 0.6752,
+      "recall": 0.4596
+    },
+    "gender=Male": {
+      "n": 9157,
+      "prevalence": 0.1123,
+      "roc_auc": 0.6608,
+      "recall": 0.428
+    },
+    "race=AfricanAmerican": {
+      "n": 3707,
+      "prevalence": 0.1068,
+      "roc_auc": 0.6576,
+      "recall": 0.4369
+    },
+    "race=Asian": {
+      "n": 122,
+      "prevalence": 0.082,
+      "roc_auc": 0.7,
+      "recall": 0.4
+    },
+    "race=Caucasian": {
+      "n": 14886,
+      "prevalence": 0.1147,
+      "roc_auc": 0.6678,
+      "recall": 0.4511
+    },
+    "race=Hispanic": {
+      "n": 371,
+      "prevalence": 0.1051,
+      "roc_auc": 0.7804,
+      "recall": 0.4872
+    },
+    "race=Missing": {
+      "n": 418,
+      "prevalence": 0.0909,
+      "roc_auc": 0.6169,
+      "recall": 0.2105
+    },
+    "race=Other": {
+      "n": 298,
+      "prevalence": 0.0872,
+      "roc_auc": 0.7009,
+      "recall": 0.4615
+    },
+    "age=[10-20)": {
+      "n": 138,
+      "prevalence": 0.0652,
+      "roc_auc": 0.5943,
+      "recall": 0.0
+    },
+    "age=[20-30)": {
+      "n": 388,
+      "prevalence": 0.1546,
+      "roc_auc": 0.8654,
+      "recall": 0.8667
+    },
+    "age=[30-40)": {
+      "n": 729,
+      "prevalence": 0.1056,
+      "roc_auc": 0.7189,
+      "recall": 0.4935
+    },
+    "age=[40-50)": {
+      "n": 1909,
+      "prevalence": 0.1058,
+      "roc_auc": 0.6541,
+      "recall": 0.3861
+    },
+    "age=[50-60)": {
+      "n": 3469,
+      "prevalence": 0.1026,
+      "roc_auc": 0.7046,
+      "recall": 0.4073
+    },
+    "age=[60-70)": {
+      "n": 4266,
+      "prevalence": 0.1088,
+      "roc_auc": 0.6455,
+      "recall": 0.3772
+    },
+    "age=[70-80)": {
+      "n": 5040,
+      "prevalence": 0.1165,
+      "roc_auc": 0.6531,
+      "recall": 0.494
+    },
+    "age=[80-90)": {
+      "n": 3287,
+      "prevalence": 0.1186,
+      "roc_auc": 0.6523,
+      "recall": 0.4692
+    },
+    "age=[90-100)": {
+      "n": 547,
+      "prevalence": 0.128,
+      "roc_auc": 0.5511,
+      "recall": 0.3571
+    }
+  }
+}

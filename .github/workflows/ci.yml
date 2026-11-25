@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check src app tests scripts
+      - name: Tests (train on synthetic data, exercise API and drift)
+        run: pytest -q
+        env:
+          MLFLOW_DISABLE_AGENT_HINT: "1"
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Use a synthetic model if no trained artefact is committed yet
+        run: |
+          if [ ! -f models/model.joblib ]; then
+            pip install -r requirements.txt
+            python scripts/make_synthetic_data.py --n 5000 --out data/synthetic.csv
+            PYTHONPATH=src python -m readmission.train --data data/synthetic.csv --no-mlflow
+          fi
+      - name: Build image
+        run: docker build -t readmission-api .
+      - name: Smoke test container
+        run: |
+          docker run -d -p 7860:7860 --name api readmission-api
+          for i in $(seq 1 30); do curl -sf localhost:7860/health && break; sleep 2; done
+          curl -sf -X POST localhost:7860/predict -H 'Content-Type: application/json' -d '{}'
+
+  deploy:
+    # Pushes to the Hugging Face Space after tests pass on main.
+    # Needs repo secret HF_TOKEN (write token) and variable HF_SPACE, e.g. safiyakhan46/readmission-api
+    needs: docker
+    if: github.ref == 'refs/heads/main' && vars.HF_SPACE != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git push --force https://user:$HF_TOKEN@huggingface.co/spaces/${{ vars.HF_SPACE }} HEAD:main

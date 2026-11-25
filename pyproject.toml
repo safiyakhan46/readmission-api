@@ -1,0 +1,20 @@
+[project]
+name = "readmission-api"
+version = "1.0.0"
+description = "30-day hospital readmission risk model served with FastAPI"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["B008"]  # FastAPI uses File()/Query() in defaults by design
+
+[tool.ruff.lint.isort]
+known-first-party = ["readmission", "app", "make_synthetic_data"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning", "ignore::SyntaxWarning"]

@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+.venv/
+mlruns/
+mlartifacts/
+mlflow.db
+reports/
+# raw data stays out of git; reference.csv (the drift baseline) is committed
+data/*
+!data/reference.csv
