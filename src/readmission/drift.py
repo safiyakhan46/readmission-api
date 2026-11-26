@@ -10,7 +10,7 @@ from evidently import Report
 from evidently.presets import DataDriftPreset
 
 from . import predict
-from .features import prepare
+from .features import clean_categoricals, prepare
 from .schema import FEATURES
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,7 +21,7 @@ def drift_summary(current_raw: pd.DataFrame, reference: pd.DataFrame | None = No
     """Returns (summary dict, evidently snapshot)."""
     if reference is None:
         reference = pd.read_csv(REFERENCE or predict.MODEL_DIR / "reference.csv")
-    ref = reference
+    ref = clean_categoricals(reference)
     cur = prepare(current_raw)[FEATURES]
     snapshot = Report([DataDriftPreset()]).run(reference_data=ref[FEATURES], current_data=cur)
     result = snapshot.dict()
