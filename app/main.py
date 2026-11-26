@@ -11,7 +11,6 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import RedirectResponse
 
 from readmission import predict
-from readmission.drift import drift_summary
 from readmission.schema import Encounter, Prediction
 
 app = FastAPI(
@@ -62,6 +61,9 @@ def predict_batch(encounters: list[Encounter]):
 @app.post("/drift")
 async def drift(file: UploadFile = File(..., description="CSV of recent encounters, same columns as /predict")):
     """Compare an uploaded batch against the training baseline (Evidently)."""
+    # Imported here, not at startup: Evidently is heavy and the free host has 512 MB RAM.
+    from readmission.drift import drift_summary
+
     df = pd.read_csv(io.BytesIO(await file.read()), dtype={"diag_1": str})
     if len(df) < 50:
         raise HTTPException(422, "need at least 50 rows for a meaningful drift test")
