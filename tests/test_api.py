@@ -55,5 +55,9 @@ def test_drift_flags_shifted_population(client, trained, tmp_path, monkeypatch):
 
     shifted = post(make(800, seed=9, shift=1.5))
     assert "number_inpatient" in shifted["drifted_columns"]
+    # A batch where nobody had an A1C test must not crash the report
+    untested = make(200, seed=11)
+    untested["A1Cresult"] = "None"
+    assert "drifted_columns" in post(untested)
     same = post(make(800, seed=10))
     assert len(same["drifted_columns"]) < len(shifted["drifted_columns"])
