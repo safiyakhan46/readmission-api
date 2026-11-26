@@ -47,3 +47,17 @@ jobs:
           docker run -d -p 7860:7860 --name api readmission-api
           for i in $(seq 1 30); do curl -sf localhost:7860/health && break; sleep 2; done
           curl -sf -X POST localhost:7860/predict -H 'Content-Type: application/json' -d '{}'
+
+  deploy:
+    # Tells Render to deploy once lint, tests and the container smoke test pass on main.
+    # Needs repo secret RENDER_DEPLOY_HOOK (Render: Settings > Deploy Hook). Skips if it is not set.
+    needs: docker
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "RENDER_DEPLOY_HOOK is not set; skipping deploy"; exit 0; fi
+          curl -fsS -X POST "$HOOK" > /dev/null && echo "Render deploy triggered"
