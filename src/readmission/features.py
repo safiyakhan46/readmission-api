@@ -38,12 +38,29 @@ def icd9_group(code) -> str:
     return "Other"
 
 
+MISSING_TOKENS = {"?", "", "nan", "NaN", "None", "<NA>", "NULL"}
+
+
+def clean_categoricals(df: pd.DataFrame) -> pd.DataFrame:
+    """Map every spelling of "not recorded" to one label, "Missing".
+
+    The UCI file leaves untested A1C/glucose blank (read as NaN), while API
+    clients send the string "None". Both must reach the model as the same
+    category, and the model's own imputer also fills NaN with "Missing".
+    """
+    out = df.copy()
+    for col in CATEGORICAL:
+        if col in out:
+            s = out[col].astype(object).where(out[col].notna(), "Missing").astype(str).str.strip()
+            out[col] = s.where(~s.isin(MISSING_TOKENS), "Missing")
+    return out
+
+
 def prepare(df: pd.DataFrame) -> pd.DataFrame:
     """Raw UCI-style frame -> model-ready feature frame (no target)."""
     out = df.copy()
     out["diag_1_group"] = out["diag_1"].map(icd9_group)
-    for col in CATEGORICAL:
-        out[col] = out[col].astype(str).replace({"?": "Missing", "nan": "Missing"})
+    out = clean_categoricals(out)
     for col in NUMERIC:
         out[col] = pd.to_numeric(out[col], errors="coerce")
     return out[NUMERIC + CATEGORICAL]
