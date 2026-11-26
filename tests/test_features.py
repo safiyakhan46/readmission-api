@@ -20,6 +20,17 @@ def test_prepare_returns_model_columns_without_nans_in_categoricals():
     assert "?" not in set(X["race"])
 
 
+def test_missing_values_spelled_any_way_get_one_label():
+    """UCI blanks (NaN) and API "None" must reach the model as the same category."""
+    import numpy as np
+    base = make(3).drop(columns=["readmitted"])
+    base["A1Cresult"] = [np.nan, "None", "?"]
+    base["max_glu_serum"] = ["", "nan", None]
+    X = prepare(base)
+    assert set(X["A1Cresult"]) == {"Missing"}
+    assert set(X["max_glu_serum"]) == {"Missing"}
+
+
 def test_target_is_30_day_only():
     df = pd.DataFrame({"readmitted": ["<30", ">30", "NO"]})
     assert make_target(df).tolist() == [1, 0, 0]
