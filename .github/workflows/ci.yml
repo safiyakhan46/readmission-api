@@ -47,33 +47,3 @@ jobs:
           docker run -d -p 7860:7860 --name api readmission-api
           for i in $(seq 1 30); do curl -sf localhost:7860/health && break; sleep 2; done
           curl -sf -X POST localhost:7860/predict -H 'Content-Type: application/json' -d '{}'
-
-  deploy:
-    # Uploads the current files to the Hugging Face Space after tests pass on main.
-    # Needs repo secret HF_TOKEN (write token) and variable HF_SPACE, e.g. safiyakhan46/readmission-api
-    needs: docker
-    if: github.ref == 'refs/heads/main' && vars.HF_SPACE != ''
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          lfs: true
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-      - name: Upload to Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_SPACE: ${{ vars.HF_SPACE }}
-        run: |
-          pip install -q huggingface_hub
-          python - <<'PY'
-          import os
-          from huggingface_hub import upload_folder
-          upload_folder(
-              repo_id=os.environ["HF_SPACE"], repo_type="space", folder_path=".",
-              token=os.environ["HF_TOKEN"], commit_message=f"Deploy {os.environ['GITHUB_SHA'][:7]}",
-              ignore_patterns=[".git/*", ".github/*", "tests/*", "data/*", "*.db", "mlruns/*"],
-          )
-          print("Uploaded to https://huggingface.co/spaces/" + os.environ["HF_SPACE"])
-          PY
