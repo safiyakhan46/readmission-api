@@ -37,7 +37,35 @@ def test_batch(client):
 
 
 def test_model_info(client):
-    assert "test_metrics" in client.get("/model-info").json()
+    info = client.get("/model-info").json()
+    assert "test_metrics" in info and "subgroup_metrics" in info
+
+
+def test_ui_is_served_at_root(client):
+    r = client.get("/")
+    assert r.status_code == 200 and "Readmission Risk" in r.text
+    assert "commit" in client.get("/health").json()
+
+
+def test_explain_matches_predict_and_lists_factors(client):
+    patient = {"age": "[80-90)", "number_inpatient": 6, "number_emergency": 3}
+    e = client.post("/explain", json=patient).json()
+    p = client.post("/predict", json=patient).json()
+    assert e["readmission_probability"] == p["readmission_probability"]
+    assert e["factors"], "a clearly atypical patient should have contributing factors"
+    top = e["factors"][0]
+    assert {"feature", "value", "typical", "impact"} <= top.keys()
+    assert "number_inpatient" in [f["feature"] for f in e["factors"]]
+
+
+def test_csv_scoring_keeps_ids_and_fills_missing_columns(client):
+    csv = "patient_id,age,number_inpatient\nA1,[80-90),5\nA2,[40-50),0\n"
+    r = client.post("/predict/csv", files={"file": ("p.csv", csv.encode(), "text/csv")})
+    rows = r.json()
+    assert r.status_code == 200 and [x["patient_id"] for x in rows] == ["A1", "A2"]
+    assert rows[0]["readmission_probability"] > rows[1]["readmission_probability"]
+    bad = client.post("/predict/csv", files={"file": ("p.csv", b"", "text/csv")})
+    assert bad.status_code == 422
 
 
 def test_drift_flags_shifted_population(client, trained, tmp_path, monkeypatch):
